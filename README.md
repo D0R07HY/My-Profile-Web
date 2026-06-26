@@ -58,3 +58,18 @@ This repo is ready for Cloudflare Pages CI, but you still need to add these GitH
 
 Once those are set, every push to `main` will deploy automatically.
 For rollback, revert the bad commit and push `main` again. Cloudflare will publish the reverted state.
+
+## Security notes
+
+This project now includes Cloudflare Pages security headers via [_headers](C:\Users\M%20S%20I\Downloads\Portfolio\_headers), including:
+- `Content-Security-Policy`
+- `Referrer-Policy`
+- `X-Content-Type-Options`
+- `X-Frame-Options`
+- `Permissions-Policy`
+- `Strict-Transport-Security`
+- `Cross-Origin-Opener-Policy`
+
+Current limitation:
+- The page is intentionally single-file and still uses inline CSS and inline JavaScript, so the CSP currently allows `'unsafe-inline'` for `script-src` and `style-src`.
+- A stricter next step would be moving CSS and JavaScript into separate files and tightening CSP further.

@@ -19,4 +19,8 @@ Get-ChildItem -Path $root -File | Where-Object {
   $_.Name -eq "index.html" -or $allowedExtensions -contains $_.Extension.ToLowerInvariant()
 } | Copy-Item -Destination $out -Force
 
+Get-ChildItem -Path $root -File | Where-Object {
+  $_.Name -in @("_headers", "_redirects")
+} | Copy-Item -Destination $out -Force
+
 Write-Host "Prepared $out for Cloudflare Pages."
