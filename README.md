@@ -38,3 +38,14 @@ Useful rule:
 - One release tag per stable visual milestone
 - One commit per logical change
 - Revert the bad commit instead of rewriting history
+
+## Cloudflare Pages
+
+This repo is ready for Cloudflare Pages CI, but you still need to add these GitHub secrets:
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_PAGES_PROJECT_NAME`
+
+Once those are set, every push to `main` will deploy automatically.
+For rollback, revert the bad commit and push `main` again. Cloudflare will publish the reverted state.
