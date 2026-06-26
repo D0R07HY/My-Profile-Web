@@ -70,6 +70,8 @@ This project now includes Cloudflare Pages security headers via [_headers](C:\Us
 - `Strict-Transport-Security`
 - `Cross-Origin-Opener-Policy`
 
-Current limitation:
-- The page is intentionally single-file and still uses inline CSS and inline JavaScript, so the CSP currently allows `'unsafe-inline'` for `script-src` and `style-src`.
-- A stricter next step would be moving CSS and JavaScript into separate files and tightening CSP further.
+Current posture:
+- CSS and JavaScript are now split into [assets/site.css](C:\Users\M%20S%20I\Downloads\Portfolio\assets\site.css) and [assets/site.js](C:\Users\M%20S%20I\Downloads\Portfolio\assets\site.js).
+- Google Fonts was removed to reduce third-party asset exposure.
+- `script-src` is locked to `'self'`.
+- Stylesheets are limited to `'self'`, while runtime style attributes used by visual effects remain explicitly scoped through CSP.

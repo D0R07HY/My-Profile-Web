@@ -19,6 +19,11 @@ Get-ChildItem -Path $root -File | Where-Object {
   $_.Name -eq "index.html" -or $allowedExtensions -contains $_.Extension.ToLowerInvariant()
 } | Copy-Item -Destination $out -Force
 
+Get-ChildItem -Path (Join-Path $root "assets") -Directory -ErrorAction SilentlyContinue | Out-Null
+if (Test-Path (Join-Path $root "assets")) {
+  Copy-Item -Path (Join-Path $root "assets") -Destination $out -Recurse -Force
+}
+
 Get-ChildItem -Path $root -File | Where-Object {
   $_.Name -in @("_headers", "_redirects")
 } | Copy-Item -Destination $out -Force
