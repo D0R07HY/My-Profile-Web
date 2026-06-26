@@ -29,6 +29,15 @@ Preferred order:
 
 Use `git reset --hard` only if you explicitly want to discard history.
 
+Rollback helper:
+
+`./scripts/git-help.ps1 -Action rollback-deploy-check -Target <commit>`
+
+This will:
+- create a revert commit
+- push to `main`
+- poll the production URL until the deployed HTML changes
+
 ### Release points
 Create a tagged release after stable milestones:
 
