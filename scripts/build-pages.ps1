@@ -24,6 +24,15 @@ if (Test-Path (Join-Path $root "assets")) {
   Copy-Item -Path (Join-Path $root "assets") -Destination $out -Recurse -Force
 }
 
+$version = (git rev-parse --short HEAD).Trim()
+$indexPath = Join-Path $out "index.html"
+if (Test-Path $indexPath) {
+  $html = Get-Content $indexPath -Raw
+  $html = $html.Replace('assets/site.css', "assets/site.css?v=$version")
+  $html = $html.Replace('assets/site.js', "assets/site.js?v=$version")
+  Set-Content -Path $indexPath -Value $html -Encoding UTF8
+}
+
 Get-ChildItem -Path $root -File | Where-Object {
   $_.Name -in @("_headers", "_redirects")
 } | Copy-Item -Destination $out -Force
