@@ -56,6 +56,12 @@ This repo is ready for Cloudflare Pages CI, but you still need to add these GitH
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_PAGES_PROJECT_NAME`
 
+Where to get them:
+
+- `CLOUDFLARE_ACCOUNT_ID`: copy from the Cloudflare Dashboard account overview or the Pages project settings for the account that owns the site.
+- `CLOUDFLARE_API_TOKEN`: create a Cloudflare API token in the Cloudflare Dashboard with Pages deploy permissions for this account.
+- `CLOUDFLARE_PAGES_PROJECT_NAME`: use the exact Pages project name shown in Cloudflare Pages, for example the project that serves this repo.
+
 Once those are set, every push to `main` will deploy automatically.
 For rollback, revert the bad commit and push `main` again. Cloudflare will publish the reverted state.
 

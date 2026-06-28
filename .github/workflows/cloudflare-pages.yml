@@ -48,6 +48,15 @@ jobs:
             'Content-Type' = 'application/json'
           }
 
+          $tokenCheck = Invoke-WebRequest -UseBasicParsing -Uri 'https://api.cloudflare.com/client/v4/user/tokens/verify' -Headers $headers -Method Get -ErrorAction Stop
+          $tokenData = $tokenCheck.Content | ConvertFrom-Json
+          if (-not $tokenData.success) {
+            $errors = ($tokenData.errors | ForEach-Object { $_.message }) -join '; '
+            throw "CLOUDFLARE_API_TOKEN verification failed: $errors"
+          }
+
+          Write-Host "Cloudflare API token verified."
+
           $projectUrl = "https://api.cloudflare.com/client/v4/accounts/$($env:CLOUDFLARE_ACCOUNT_ID)/pages/projects/$($env:CLOUDFLARE_PAGES_PROJECT_NAME)"
           $response = Invoke-WebRequest -UseBasicParsing -Uri $projectUrl -Headers $headers -Method Get -ErrorAction Stop
           $data = $response.Content | ConvertFrom-Json
