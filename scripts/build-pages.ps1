@@ -25,12 +25,37 @@ if (Test-Path (Join-Path $root "assets")) {
 }
 
 $version = (git rev-parse --short HEAD).Trim()
+
+function Write-Utf8LfFile {
+  param(
+    [Parameter(Mandatory = $true)][string]$Path,
+    [Parameter(Mandatory = $true)][string]$Content
+  )
+
+  $normalized = $Content -replace "`r`n?", "`n"
+  [System.IO.File]::WriteAllText($Path, $normalized, [System.Text.UTF8Encoding]::new($false))
+}
+
 $indexPath = Join-Path $out "index.html"
 if (Test-Path $indexPath) {
   $html = Get-Content $indexPath -Raw
   $html = $html.Replace('assets/site.css', "assets/site.css?v=$version")
   $html = $html.Replace('assets/site.js', "assets/site.js?v=$version")
-  Set-Content -Path $indexPath -Value $html -Encoding UTF8
+  Write-Utf8LfFile -Path $indexPath -Content $html
+}
+
+$textFilesToNormalize = @(
+  (Join-Path $out "assets/site.css"),
+  (Join-Path $out "assets/site.js"),
+  (Join-Path $out "_headers"),
+  (Join-Path $out "_redirects")
+)
+
+foreach ($file in $textFilesToNormalize) {
+  if (Test-Path $file) {
+    $content = Get-Content $file -Raw
+    Write-Utf8LfFile -Path $file -Content $content
+  }
 }
 
 Get-ChildItem -Path $root -File | Where-Object {
