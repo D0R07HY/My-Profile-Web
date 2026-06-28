@@ -9,6 +9,7 @@ const clockEl = document.getElementById("clock");
   const revealItems = Array.from(document.querySelectorAll(".reveal"));
   const langBlocks = Array.from(document.querySelectorAll("[data-lang-block]"));
   const heroHeading = document.querySelector(".split-heading");
+  const HERO_SPLIT_OUT_DURATION = 320;
   const translations = {
     en: {
       pageTitle: "D0R07HY | Cybersecurity Portfolio",
@@ -253,23 +254,16 @@ const clockEl = document.getElementById("clock");
     });
 
     setupSplitHeading();
-
-    if (heroHeading.closest(".is-visible")) {
-      heroHeading.classList.add("is-visible");
-    } else {
-      heroHeading.classList.remove("is-visible");
-    }
+    heroHeading.classList.remove("is-visible");
   }
 
   function setLanguage(lang) {
     const currentLang = translations[lang] ? lang : "en";
     const dictionary = translations[currentLang];
-    const root = document.documentElement;
     const blockDuration = 220;
     const blockGap = 120;
     const headerBlock = document.querySelector(".site-header[data-lang-block]");
-
-    root.lang = currentLang;
+    let heroTransitionScheduled = false;
 
     langBlocks.forEach((block, index) => {
       const blockNodes = Array.from(block.querySelectorAll("[data-i18n]"));
@@ -287,7 +281,12 @@ const clockEl = document.getElementById("clock");
             }
           });
 
-          renderHeroHeading(currentLang);
+          if (!heroTransitionScheduled && block.contains(heroHeading)) {
+            heroTransitionScheduled = true;
+            transitionHeroHeading(currentLang, () => {
+              document.documentElement.lang = currentLang;
+            });
+          }
 
           if (block === headerBlock) {
             document.title = dictionary.pageTitle;
@@ -397,15 +396,63 @@ const clockEl = document.getElementById("clock");
     splitLines.forEach((line, lineIndex) => {
       const text = line.dataset.splitText || line.textContent || "";
       line.textContent = "";
+      const words = text.split(" ");
+      let charIndex = 0;
 
-      Array.from(text).forEach((char, charIndex) => {
-        const span = document.createElement("span");
-        span.className = "split-char";
-        span.textContent = char === " " ? "\u00A0" : char;
-        span.style.setProperty("--char-delay", `${(lineIndex * 180) + (charIndex * 28)}ms`);
-        line.appendChild(span);
+      words.forEach((word, wordIndex) => {
+        const wordSpan = document.createElement("span");
+        wordSpan.className = "split-word";
+
+        Array.from(word).forEach((char) => {
+          const span = document.createElement("span");
+          span.className = "split-char";
+          span.textContent = char;
+          span.style.setProperty("--char-delay", `${(lineIndex * 140) + (charIndex * 32)}ms`);
+          span.style.setProperty("--char-out-delay", `${(lineIndex * 30) + (charIndex * 16)}ms`);
+          wordSpan.appendChild(span);
+          charIndex += 1;
+        });
+
+        line.appendChild(wordSpan);
+
+        if (wordIndex < words.length - 1) {
+          const spacer = document.createElement("span");
+          spacer.className = "split-space";
+          spacer.setAttribute("aria-hidden", "true");
+          spacer.textContent = "\u00A0";
+          line.appendChild(spacer);
+        }
       });
     });
+  }
+
+  function transitionHeroHeading(lang, beforeRender) {
+    if (!heroHeading) {
+      return;
+    }
+
+    const shouldAnimateIn = Boolean(heroHeading.closest(".is-visible"));
+    heroHeading.style.minHeight = `${Math.ceil(heroHeading.getBoundingClientRect().height)}px`;
+    heroHeading.classList.add("is-transitioning-out");
+    heroHeading.classList.remove("is-visible");
+
+    window.setTimeout(() => {
+      if (typeof beforeRender === "function") {
+        beforeRender();
+      }
+
+      renderHeroHeading(lang);
+      heroHeading.classList.remove("is-transitioning-out");
+      heroHeading.style.removeProperty("min-height");
+
+      if (shouldAnimateIn) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            heroHeading.classList.add("is-visible");
+          });
+        });
+      }
+    }, HERO_SPLIT_OUT_DURATION);
   }
 
   function setupMagnetButtons() {
