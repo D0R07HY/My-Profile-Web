@@ -48,7 +48,7 @@ jobs:
             'Content-Type' = 'application/json'
           }
 
-          $tokenCheck = Invoke-WebRequest -UseBasicParsing -Uri 'https://api.cloudflare.com/client/v4/accounts/$($env:CLOUDFLARE_ACCOUNT_ID)/tokens/verify' -Headers $headers -Method Get -ErrorAction Stop
+          $tokenCheck = Invoke-WebRequest -UseBasicParsing -Uri "https://api.cloudflare.com/client/v4/accounts/$($env:CLOUDFLARE_ACCOUNT_ID)/tokens/verify" -Headers $headers -Method Get -ErrorAction Stop
           $tokenData = $tokenCheck.Content | ConvertFrom-Json
           if (-not $tokenData.success) {
             $errors = ($tokenData.errors | ForEach-Object { $_.message }) -join '; '
