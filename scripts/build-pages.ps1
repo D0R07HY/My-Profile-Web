@@ -36,9 +36,17 @@ function Write-Utf8LfFile {
   [System.IO.File]::WriteAllText($Path, $normalized, [System.Text.UTF8Encoding]::new($false))
 }
 
+function Read-Utf8Text {
+  param(
+    [Parameter(Mandatory = $true)][string]$Path
+  )
+
+  return [System.IO.File]::ReadAllText($Path, [System.Text.UTF8Encoding]::new($false))
+}
+
 $indexPath = Join-Path $out "index.html"
 if (Test-Path $indexPath) {
-  $html = Get-Content $indexPath -Raw
+  $html = Read-Utf8Text $indexPath
   $html = $html.Replace('assets/site.css', "assets/site.css?v=$version")
   $html = $html.Replace('assets/site.js', "assets/site.js?v=$version")
   Write-Utf8LfFile -Path $indexPath -Content $html
@@ -53,7 +61,7 @@ $textFilesToNormalize = @(
 
 foreach ($file in $textFilesToNormalize) {
   if (Test-Path $file) {
-    $content = Get-Content $file -Raw
+    $content = Read-Utf8Text $file
     Write-Utf8LfFile -Path $file -Content $content
   }
 }
