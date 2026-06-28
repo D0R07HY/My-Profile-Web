@@ -1,3 +1,11 @@
+  @font-face {
+    font-family: "Orbitron";
+    src: url("./fonts/Orbitron-wght.ttf") format("truetype");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -22,6 +30,7 @@
     --radius-md: 20px;
     --radius-sm: 14px;
     --content-width: 1180px;
+    --display-font: "Orbitron", "Segoe UI", "Trebuchet MS", "Helvetica Neue", Arial, sans-serif;
   }
 
   html {
@@ -236,7 +245,9 @@
   }
 
   .brand-copy strong {
+    font-family: var(--display-font);
     font-size: 0.95rem;
+    font-weight: 700;
     letter-spacing: 0.12em;
   }
 
@@ -409,10 +420,13 @@
   }
 
   h1 {
+    font-family: var(--display-font);
     font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 700;
     line-height: 0.94;
-    letter-spacing: -0.05em;
+    letter-spacing: 0.02em;
     max-width: 12ch;
+    text-transform: uppercase;
   }
 
   .hero-subtitle {
@@ -632,8 +646,11 @@
   }
 
   .section-heading h2 {
+    font-family: var(--display-font);
     font-size: clamp(1.6rem, 3vw, 2.3rem);
-    letter-spacing: -0.04em;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
   }
 
   .section-heading p {
@@ -688,7 +705,11 @@
   }
 
   .panel h3 {
+    font-family: var(--display-font);
     font-size: 1.12rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
     margin-bottom: 12px;
   }
 

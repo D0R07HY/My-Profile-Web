@@ -73,5 +73,6 @@ This project now includes Cloudflare Pages security headers via [_headers](C:\Us
 Current posture:
 - CSS and JavaScript are now split into [assets/site.css](C:\Users\M%20S%20I\Downloads\Portfolio\assets\site.css) and [assets/site.js](C:\Users\M%20S%20I\Downloads\Portfolio\assets\site.js).
 - Google Fonts was removed to reduce third-party asset exposure.
+- The display font is self-hosted from an open-license source in [assets/fonts](C:\Users\M%20S%20I\Downloads\Portfolio\assets\fonts).
 - `script-src` is locked to `'self'`.
 - Stylesheets are limited to `'self'`, while runtime style attributes used by visual effects remain explicitly scoped through CSP.
