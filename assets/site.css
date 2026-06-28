@@ -421,11 +421,11 @@
 
   h1 {
     font-family: var(--display-font);
-    font-size: clamp(2.15rem, 4.35vw, 4.35rem);
+    font-size: clamp(1.9rem, 3.95vw, 3.9rem);
     font-weight: 700;
-    line-height: 0.98;
-    letter-spacing: 0.012em;
-    max-width: 13.8ch;
+    line-height: 1;
+    letter-spacing: 0.008em;
+    max-width: 14.6ch;
     text-transform: uppercase;
     text-wrap: balance;
   }
