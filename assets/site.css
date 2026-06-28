@@ -421,12 +421,13 @@
 
   h1 {
     font-family: var(--display-font);
-    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-size: clamp(2.15rem, 4.35vw, 4.35rem);
     font-weight: 700;
-    line-height: 0.94;
-    letter-spacing: 0.02em;
-    max-width: 12ch;
+    line-height: 0.98;
+    letter-spacing: 0.012em;
+    max-width: 13.8ch;
     text-transform: uppercase;
+    text-wrap: balance;
   }
 
   .hero-subtitle {
