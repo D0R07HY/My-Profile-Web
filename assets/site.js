@@ -8,6 +8,7 @@ const clockEl = document.getElementById("clock");
     .filter(Boolean);
   const revealItems = Array.from(document.querySelectorAll(".reveal"));
   const langBlocks = Array.from(document.querySelectorAll("[data-lang-block]"));
+  const heroHeading = document.querySelector(".split-heading");
   const translations = {
     en: {
       pageTitle: "D0R07HY | Cybersecurity Portfolio",
@@ -217,6 +218,49 @@ const clockEl = document.getElementById("clock");
     }
   };
 
+  function getHeroNameLines(lang) {
+    if (!heroHeading) {
+      return [];
+    }
+
+    const source = lang === "th"
+      ? (heroHeading.dataset.nameTh || heroHeading.dataset.nameEn || "")
+      : (heroHeading.dataset.nameEn || "");
+    return source
+      .split("|")
+      .map((line) => line.trim())
+      .filter(Boolean);
+  }
+
+  function renderHeroHeading(lang) {
+    if (!heroHeading) {
+      return;
+    }
+
+    const lines = getHeroNameLines(lang);
+    const fallbackLabel = heroHeading.dataset.nameEn || "";
+    const joinedName = lines.join(" ").trim() || fallbackLabel.replaceAll("|", " ").trim();
+
+    heroHeading.replaceChildren();
+    heroHeading.setAttribute("aria-label", joinedName);
+
+    lines.forEach((text, lineIndex) => {
+      const line = document.createElement("span");
+      line.className = "split-line";
+      line.dataset.splitText = text;
+      line.style.setProperty("--line-index", String(lineIndex));
+      heroHeading.appendChild(line);
+    });
+
+    setupSplitHeading();
+
+    if (heroHeading.closest(".is-visible")) {
+      heroHeading.classList.add("is-visible");
+    } else {
+      heroHeading.classList.remove("is-visible");
+    }
+  }
+
   function setLanguage(lang) {
     const currentLang = translations[lang] ? lang : "en";
     const dictionary = translations[currentLang];
@@ -235,18 +279,20 @@ const clockEl = document.getElementById("clock");
         block.classList.add("is-switching");
       }, startDelay);
 
-      window.setTimeout(() => {
-        blockNodes.forEach((node) => {
-          const key = node.dataset.i18n;
-          if (dictionary[key] !== undefined) {
-            node.textContent = dictionary[key];
-          }
-        });
+        window.setTimeout(() => {
+          blockNodes.forEach((node) => {
+            const key = node.dataset.i18n;
+            if (dictionary[key] !== undefined) {
+              node.textContent = dictionary[key];
+            }
+          });
 
-        if (block === headerBlock) {
-          document.title = dictionary.pageTitle;
-          langButtons.forEach((button) => {
-            button.classList.toggle("active", button.dataset.lang === currentLang);
+          renderHeroHeading(currentLang);
+
+          if (block === headerBlock) {
+            document.title = dictionary.pageTitle;
+            langButtons.forEach((button) => {
+              button.classList.toggle("active", button.dataset.lang === currentLang);
           });
           localStorage.setItem("portfolio_lang", currentLang);
         }
@@ -345,6 +391,72 @@ const clockEl = document.getElementById("clock");
     });
   }
 
+  function setupSplitHeading() {
+    const splitLines = Array.from(document.querySelectorAll(".split-line[data-split-text]"));
+
+    splitLines.forEach((line, lineIndex) => {
+      const text = line.dataset.splitText || line.textContent || "";
+      line.textContent = "";
+
+      Array.from(text).forEach((char, charIndex) => {
+        const span = document.createElement("span");
+        span.className = "split-char";
+        span.textContent = char === " " ? "\u00A0" : char;
+        span.style.setProperty("--char-delay", `${(lineIndex * 180) + (charIndex * 28)}ms`);
+        line.appendChild(span);
+      });
+    });
+  }
+
+  function setupMagnetButtons() {
+    const supportsFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (!supportsFinePointer || prefersReducedMotion) {
+      return;
+    }
+
+    document.querySelectorAll(".button-magnet").forEach((button) => {
+      button.addEventListener("pointermove", (event) => {
+        const rect = button.getBoundingClientRect();
+        const offsetX = event.clientX - (rect.left + rect.width / 2);
+        const offsetY = event.clientY - (rect.top + rect.height / 2);
+        const moveX = Math.max(-10, Math.min(10, offsetX * 0.16));
+        const moveY = Math.max(-8, Math.min(8, offsetY * 0.16));
+        button.style.setProperty("--magnet-x", `${moveX}px`);
+        button.style.setProperty("--magnet-y", `${moveY}px`);
+      });
+
+      button.addEventListener("pointerleave", () => {
+        button.style.setProperty("--magnet-x", "0px");
+        button.style.setProperty("--magnet-y", "0px");
+      });
+    });
+  }
+
+  function setupCertificateSpotlight() {
+    const supportsFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+    if (!supportsFinePointer) {
+      return;
+    }
+
+    document.querySelectorAll(".cert-card").forEach((card) => {
+      card.addEventListener("pointermove", (event) => {
+        const rect = card.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width) * 100;
+        const y = ((event.clientY - rect.top) / rect.height) * 100;
+        card.style.setProperty("--spotlight-x", `${x}%`);
+        card.style.setProperty("--spotlight-y", `${y}%`);
+      });
+
+      card.addEventListener("pointerleave", () => {
+        card.style.setProperty("--spotlight-x", "50%");
+        card.style.setProperty("--spotlight-y", "50%");
+      });
+    });
+  }
+
   const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       entry.target.classList.toggle("is-visible", entry.isIntersecting);
@@ -363,6 +475,9 @@ const clockEl = document.getElementById("clock");
 
   window.addEventListener("scroll", activateNav, { passive: true });
   window.addEventListener("load", activateNav);
+  renderHeroHeading("en");
+  setupMagnetButtons();
+  setupCertificateSpotlight();
   setupCursorGlow();
   setLanguage(localStorage.getItem("portfolio_lang") || "en");
   updateClock();

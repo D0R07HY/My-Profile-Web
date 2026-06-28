@@ -6,6 +6,22 @@
     font-display: swap;
   }
 
+  @font-face {
+    font-family: "Chakra Petch";
+    src: url("./fonts/ChakraPetch-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Chakra Petch";
+    src: url("./fonts/ChakraPetch-SemiBold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -31,6 +47,7 @@
     --radius-sm: 14px;
     --content-width: 1180px;
     --display-font: "Orbitron", "Segoe UI", "Trebuchet MS", "Helvetica Neue", Arial, sans-serif;
+    --display-font-th: "Chakra Petch", "Noto Sans Thai", "Leelawadee UI", Tahoma, sans-serif;
   }
 
   html {
@@ -421,16 +438,62 @@
 
   h1 {
     font-family: var(--display-font);
-    font-size: clamp(1.8rem, 3.7vw, 3.65rem);
+    font-size: clamp(1.72rem, 3.45vw, 3.42rem);
     font-weight: 700;
-    line-height: 1;
-    letter-spacing: 0.006em;
+    line-height: 0.94;
+    letter-spacing: -0.01em;
     max-width: none;
     text-transform: uppercase;
   }
 
   h1 span {
     display: block;
+  }
+
+  .split-heading {
+    perspective: 1200px;
+    display: grid;
+    gap: 0.08em;
+  }
+
+  .split-line {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .split-char {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(10px);
+    transform: translate3d(0, 24px, 0) rotateX(-72deg) scale(0.92);
+    transform-origin: 50% 100%;
+    transition:
+      opacity 720ms cubic-bezier(0.16, 1, 0.3, 1),
+      filter 720ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 720ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--char-delay, 0ms);
+    will-change: transform, opacity, filter;
+  }
+
+  .hero-copy.is-visible .split-char,
+  .split-heading.is-visible .split-char {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) rotateX(0) scale(1);
+  }
+
+  html[lang="th"] h1,
+  html[lang="th"] .brand-copy strong,
+  html[lang="th"] .section-heading h2,
+  html[lang="th"] .panel h3 {
+    font-family: var(--display-font-th);
+    text-transform: none;
+    letter-spacing: 0.01em;
+  }
+
+  html[lang="th"] h1 {
+    font-size: clamp(1.82rem, 3.5vw, 3.36rem);
+    line-height: 1.02;
   }
 
   .hero-subtitle {
@@ -466,6 +529,16 @@
     min-height: 50px;
   }
 
+  .button-magnet {
+    transform: translate3d(var(--magnet-x, 0), var(--magnet-y, 0), 0);
+    transition:
+      transform 260ms cubic-bezier(0.2, 0.85, 0.24, 1),
+      border-color 180ms ease,
+      background 180ms ease,
+      box-shadow 180ms ease;
+    will-change: transform;
+  }
+
   .button-primary {
     color: #06101d;
     font-weight: 700;
@@ -480,6 +553,10 @@
 
   .button:hover {
     transform: translateY(-2px);
+  }
+
+  .button-magnet:hover {
+    transform: translate3d(var(--magnet-x, 0), calc(var(--magnet-y, 0) - 2px), 0);
   }
 
   .signal-grid {
@@ -799,12 +876,28 @@
     transform: translateY(0) scale(1);
   }
 
+  .cert-card::before {
+    content: "";
+    position: absolute;
+    inset: -24%;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%), rgba(166, 238, 255, 0.22), rgba(125, 104, 255, 0.12) 22%, rgba(84, 214, 255, 0.06) 34%, transparent 56%);
+    opacity: 0;
+    transition: opacity 240ms ease;
+    z-index: 0;
+  }
+
   .cert-card:hover {
     animation: cert-spring 520ms cubic-bezier(0.18, 0.9, 0.2, 1) both;
     border-color: var(--line-strong);
     box-shadow:
       0 22px 54px rgba(0, 0, 0, 0.26),
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .cert-card:hover::before {
+    opacity: 1;
   }
 
   .cert-card::after {
@@ -815,6 +908,7 @@
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 32%, transparent 68%, rgba(84, 214, 255, 0.08));
     opacity: 0;
     transition: opacity 240ms ease;
+    z-index: 1;
   }
 
   .cert-card:hover::after {
@@ -837,10 +931,14 @@
       linear-gradient(180deg, rgba(84, 214, 255, 0.05), rgba(125, 104, 255, 0.08)),
       #091122;
     border-bottom: 1px solid var(--line);
+    position: relative;
+    z-index: 2;
   }
 
   .cert-body {
     padding: 18px;
+    position: relative;
+    z-index: 2;
   }
 
   .cert-meta {
