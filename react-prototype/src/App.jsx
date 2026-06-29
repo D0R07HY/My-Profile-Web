@@ -119,97 +119,6 @@ function useScrollProgress() {
   }, []);
 }
 
-function useCursorGlow() {
-  useEffect(() => {
-    const supportsFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (!supportsFinePointer || prefersReducedMotion) {
-      return undefined;
-    }
-
-    const root = document.documentElement;
-    const glow = document.querySelector(".cursor-glow");
-    const dot = document.querySelector(".cursor-dot");
-    const hoverTargets = document.querySelectorAll("a, button, .cert-card, .contact-link, .tag");
-
-    if (!glow || !dot) {
-      return undefined;
-    }
-
-    let pointerX = -140;
-    let pointerY = -140;
-    let glowX = pointerX;
-    let glowY = pointerY;
-    let frameId = 0;
-
-    root.classList.add("custom-cursor-ready");
-
-    const moveCursor = () => {
-      glowX += (pointerX - glowX) * 0.34;
-      glowY += (pointerY - glowY) * 0.34;
-      glow.style.setProperty("--cursor-x", `${glowX}px`);
-      glow.style.setProperty("--cursor-y", `${glowY}px`);
-      dot.style.setProperty("--cursor-x", `${pointerX}px`);
-      dot.style.setProperty("--cursor-y", `${pointerY}px`);
-      frameId = window.requestAnimationFrame(moveCursor);
-    };
-
-    const showCursor = () => root.classList.add("cursor-active");
-    const hideCursor = () => {
-      root.classList.remove("cursor-active", "cursor-hover");
-      window.cancelAnimationFrame(frameId);
-      frameId = 0;
-    };
-
-    const onPointerMove = (event) => {
-      pointerX = event.clientX;
-      pointerY = event.clientY;
-      showCursor();
-
-      if (!frameId) {
-        frameId = window.requestAnimationFrame(moveCursor);
-      }
-    };
-
-    const onPointerOut = (event) => {
-      if (!event.relatedTarget) {
-        hideCursor();
-      }
-    };
-
-    const enterHandlers = [];
-    const leaveHandlers = [];
-
-    hoverTargets.forEach((target) => {
-      const onEnter = () => root.classList.add("cursor-hover");
-      const onLeave = () => root.classList.remove("cursor-hover");
-      enterHandlers.push([target, onEnter]);
-      leaveHandlers.push([target, onLeave]);
-      target.addEventListener("pointerenter", onEnter);
-      target.addEventListener("pointerleave", onLeave);
-    });
-
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-    window.addEventListener("pointerout", onPointerOut);
-    window.addEventListener("blur", hideCursor);
-
-    return () => {
-      root.classList.remove("custom-cursor-ready", "cursor-active", "cursor-hover");
-      window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("pointerout", onPointerOut);
-      window.removeEventListener("blur", hideCursor);
-      window.cancelAnimationFrame(frameId);
-      enterHandlers.forEach(([target, handler]) => {
-        target.removeEventListener("pointerenter", handler);
-      });
-      leaveHandlers.forEach(([target, handler]) => {
-        target.removeEventListener("pointerleave", handler);
-      });
-    };
-  }, []);
-}
-
 function useMagnetButtons() {
   useEffect(() => {
     const supportsFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -481,7 +390,6 @@ function App() {
   const year = new Date().getFullYear();
 
   useReveal();
-  useCursorGlow();
   useMagnetButtons();
   useCertificateSpotlight();
   useInteractiveSurfaces();
@@ -579,8 +487,6 @@ function App() {
   return (
     <>
       <div className="scroll-progress" aria-hidden="true"></div>
-      <div className="cursor-glow" aria-hidden="true"></div>
-      <div className="cursor-dot" aria-hidden="true"></div>
       <canvas id="starfield" ref={canvasRef} aria-hidden="true"></canvas>
       <div className="grid-overlay" aria-hidden="true"></div>
       <div className="scanlines" aria-hidden="true"></div>
@@ -693,10 +599,6 @@ function App() {
               </div>
 
               <div className="profile-stage">
-                <div className="profile-orbit profile-orbit-one" aria-hidden="true"></div>
-                <div className="profile-orbit profile-orbit-two" aria-hidden="true"></div>
-                <div className="profile-ping profile-ping-one" aria-hidden="true"></div>
-                <div className="profile-ping profile-ping-two" aria-hidden="true"></div>
                 <div className="profile-frame fx-surface">
                   <img src="/media/DorothyHalf.png" alt="Portrait of Paphanthadanai Lomphonthan" />
                 </div>

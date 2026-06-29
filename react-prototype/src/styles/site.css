@@ -118,76 +118,6 @@
     opacity: 0.28;
   }
 
-  .cursor-glow,
-  .cursor-dot {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 100;
-    pointer-events: none;
-    opacity: 0;
-    transform: translate3d(var(--cursor-x, -140px), var(--cursor-y, -140px), 0) translate(-50%, -50%) scale(var(--cursor-scale, 1));
-    transition: opacity 180ms ease, width 180ms ease, height 180ms ease, transform 70ms ease;
-    will-change: opacity, transform;
-  }
-
-  .cursor-glow {
-    width: 220px;
-    height: 220px;
-    border-radius: 999px;
-    background:
-      radial-gradient(circle, rgba(84, 214, 255, 0.14) 0%, rgba(125, 104, 255, 0.09) 32%, rgba(115, 255, 167, 0.03) 50%, transparent 74%);
-    filter: blur(8px);
-    mix-blend-mode: screen;
-  }
-
-  .cursor-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: 1px solid rgba(233, 241, 255, 0.74);
-    box-shadow:
-      0 0 18px rgba(84, 214, 255, 0.88),
-      0 0 34px rgba(125, 104, 255, 0.46);
-  }
-
-  html.custom-cursor-ready,
-  html.custom-cursor-ready * {
-    cursor: none;
-  }
-
-  html.cursor-active .cursor-glow,
-  html.cursor-active .cursor-dot {
-    opacity: 1;
-  }
-
-  html.cursor-active .cursor-glow {
-    opacity: 0.28;
-  }
-
-  html.cursor-active .cursor-dot {
-    opacity: 0.78;
-  }
-
-  html.cursor-hover .cursor-glow {
-    width: 275px;
-    height: 275px;
-    opacity: 0.82;
-    filter: blur(10px);
-    background:
-      radial-gradient(circle, rgba(84, 214, 255, 0.28) 0%, rgba(125, 104, 255, 0.18) 30%, rgba(115, 255, 167, 0.06) 50%, transparent 76%);
-  }
-
-  html.cursor-hover .cursor-dot {
-    --cursor-scale: 1.28;
-    background: var(--accent-3);
-    opacity: 0.96;
-    box-shadow:
-      0 0 12px rgba(115, 255, 167, 0.72),
-      0 0 28px rgba(84, 214, 255, 0.28);
-  }
-
   .scroll-progress {
     position: fixed;
     top: 0;
@@ -763,89 +693,6 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
-    position: relative;
-  }
-
-  .profile-orbit,
-  .profile-ping {
-    position: absolute;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .profile-orbit {
-    border-radius: 50%;
-    border: 1px solid rgba(84, 214, 255, 0.14);
-    box-shadow: inset 0 0 26px rgba(84, 214, 255, 0.04);
-    opacity: 0.72;
-  }
-
-  .profile-orbit::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(166, 238, 255, 0.95), rgba(84, 214, 255, 0.65));
-    box-shadow:
-      0 0 14px rgba(84, 214, 255, 0.72),
-      0 0 24px rgba(125, 104, 255, 0.18);
-  }
-
-  .profile-orbit-one {
-    inset: 32px -12px 102px -18px;
-    animation: orbit-spin 15s linear infinite;
-  }
-
-  .profile-orbit-one::before {
-    transform: translate(-50%, calc(-50% - 50%));
-  }
-
-  .profile-orbit-two {
-    inset: 74px 22px 164px 18px;
-    border-color: rgba(125, 104, 255, 0.16);
-    animation: orbit-spin-reverse 11.5s linear infinite;
-  }
-
-  .profile-orbit-two::before {
-    background: radial-gradient(circle, rgba(115, 255, 167, 0.9), rgba(84, 214, 255, 0.5));
-    transform: translate(calc(-50% + 46%), -50%);
-  }
-
-  .profile-ping {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: rgba(84, 214, 255, 0.9);
-    box-shadow: 0 0 14px rgba(84, 214, 255, 0.72);
-  }
-
-  .profile-ping::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 1px solid rgba(84, 214, 255, 0.24);
-    animation: profile-ping 2.8s ease-out infinite;
-  }
-
-  .profile-ping-one {
-    top: 58px;
-    right: 24px;
-  }
-
-  .profile-ping-two {
-    bottom: 124px;
-    left: 18px;
-    background: rgba(115, 255, 167, 0.92);
-    box-shadow: 0 0 14px rgba(115, 255, 167, 0.68);
-  }
-
-  .profile-ping-two::before {
-    border-color: rgba(115, 255, 167, 0.24);
-    animation-delay: 1.1s;
   }
 
   .profile-frame {
@@ -1652,16 +1499,6 @@
       scroll-behavior: auto;
     }
 
-    html.custom-cursor-ready,
-    html.custom-cursor-ready * {
-      cursor: auto;
-    }
-
-    .cursor-glow,
-    .cursor-dot {
-      display: none;
-    }
-
     .reveal,
     .tag-wrap.reveal .tag,
     .reveal.is-visible.fx-surface,
@@ -1676,10 +1513,7 @@
 
     .hero-ambient span,
     .support-button,
-    .support-button::after,
-    .profile-orbit,
-    .profile-orbit::before,
-    .profile-ping::before {
+    .support-button::after {
       animation: none;
     }
   }
@@ -1699,39 +1533,6 @@
     100% {
       opacity: 0;
       transform: translateX(260%);
-    }
-  }
-
-  @keyframes orbit-spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes orbit-spin-reverse {
-    from {
-      transform: rotate(360deg);
-    }
-    to {
-      transform: rotate(0deg);
-    }
-  }
-
-  @keyframes profile-ping {
-    0% {
-      transform: scale(1);
-      opacity: 0.72;
-    }
-    70% {
-      transform: scale(4.6);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(4.6);
-      opacity: 0;
     }
   }
 
@@ -1782,14 +1583,6 @@
     .signal-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
-    .profile-orbit-one {
-      inset: 26px 4px 96px 0;
-    }
-
-    .profile-orbit-two {
-      inset: 68px 34px 152px 30px;
-    }
   }
 
   @media (max-width: 760px) {
@@ -1818,11 +1611,6 @@
 
     .profile-frame {
       min-height: 320px;
-    }
-
-    .profile-orbit,
-    .profile-ping {
-      opacity: 0.5;
     }
 
     .timeline-item {
