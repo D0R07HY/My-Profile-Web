@@ -1,0 +1,65 @@
+name: Deploy React Prototype Preview
+
+on:
+  push:
+    branches:
+      - codex/react-vite-prototype
+    paths:
+      - ".github/workflows/cloudflare-pages-preview.yml"
+      - "react-prototype/**"
+  workflow_dispatch:
+
+concurrency:
+  group: react-prototype-preview
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    env:
+      PREVIEW_BRANCH_ALIAS: react-vite-prototype
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: react-prototype/package-lock.json
+
+      - name: Install dependencies
+        working-directory: react-prototype
+        run: npm ci
+
+      - name: Build React prototype
+        working-directory: react-prototype
+        run: npm run build
+
+      - name: Deploy preview to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }} --branch=${{ env.PREVIEW_BRANCH_ALIAS }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: react-prototype
+
+      - name: Publish deployment summary
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+        run: |
+          {
+            echo "## React Prototype Preview"
+            echo
+            echo "- Branch: \`${{ github.ref_name }}\`"
+            echo "- Preview URL: ${DEPLOYMENT_URL}"
+            echo "- Stable alias: ${ALIAS_URL}"
+          } >> "$GITHUB_STEP_SUMMARY"
