@@ -1,16 +1,39 @@
-# React + Vite
+# React/Vite Portfolio Prototype
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+This folder contains the React + Vite prototype for the portfolio migration.
 
-Currently, two official plugins are available:
+## What this prototype includes
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Parity-focused portfolio sections
+- English/Thai language switching
+- Split-text hero animation
+- Certificate hover motion
+- Shared design system and custom typography
 
-## React Compiler
+## Local development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+cd react-prototype
+npm install
+npm run dev
+```
 
-## Expanding the Oxlint configuration
+## Production build
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+cd react-prototype
+npm run build
+```
+
+## Lint
+
+```bash
+cd react-prototype
+npm run lint
+```
+
+## Notes
+
+- This branch is intentionally isolated from the production `main` branch.
+- Media assets live in `public/media`.
+- Typography assets live in `public/fonts`.
