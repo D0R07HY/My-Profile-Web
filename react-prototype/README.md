@@ -7,7 +7,12 @@ This folder contains the React + Vite prototype for the portfolio migration.
 - Parity-focused portfolio sections
 - English/Thai language switching
 - Split-text hero animation
+- Block-based language transition
+- Scroll progress indicator
+- Hero ambient scan motion
+- Interactive surface tilt/spotlight
 - Certificate hover motion
+- Magnet hover on key controls
 - Shared design system and custom typography
 
 ## Local development
@@ -37,3 +42,4 @@ npm run lint
 - This branch is intentionally isolated from the production `main` branch.
 - Media assets live in `public/media`.
 - Typography assets live in `public/fonts`.
+- The frozen migration-ready motion baseline is documented in `MIGRATION_BASELINE.md`.
