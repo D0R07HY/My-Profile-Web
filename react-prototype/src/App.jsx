@@ -98,6 +98,27 @@ function useActiveNav(sectionIds) {
   return activeId;
 }
 
+function useScrollProgress() {
+  useEffect(() => {
+    const root = document.documentElement;
+
+    const update = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollable > 0 ? window.scrollY / scrollable : 0;
+      root.style.setProperty("--scroll-progress", `${Math.max(0, Math.min(1, progress))}`);
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+}
+
 function useCursorGlow() {
   useEffect(() => {
     const supportsFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -465,6 +486,7 @@ function App() {
   useCertificateSpotlight();
   useInteractiveSurfaces();
   useStarfield(canvasRef);
+  useScrollProgress();
 
   useEffect(() => {
     const stored = window.localStorage.getItem("portfolio_lang");
@@ -556,6 +578,7 @@ function App() {
 
   return (
     <>
+      <div className="scroll-progress" aria-hidden="true"></div>
       <div className="cursor-glow" aria-hidden="true"></div>
       <div className="cursor-dot" aria-hidden="true"></div>
       <canvas id="starfield" ref={canvasRef} aria-hidden="true"></canvas>
@@ -670,6 +693,10 @@ function App() {
               </div>
 
               <div className="profile-stage">
+                <div className="profile-orbit profile-orbit-one" aria-hidden="true"></div>
+                <div className="profile-orbit profile-orbit-two" aria-hidden="true"></div>
+                <div className="profile-ping profile-ping-one" aria-hidden="true"></div>
+                <div className="profile-ping profile-ping-two" aria-hidden="true"></div>
                 <div className="profile-frame fx-surface">
                   <img src="/media/DorothyHalf.png" alt="Portrait of Paphanthadanai Lomphonthan" />
                 </div>
