@@ -198,7 +198,7 @@ function useMagnetButtons() {
       return undefined;
     }
 
-    const buttons = Array.from(document.querySelectorAll(".button-magnet"));
+    const buttons = Array.from(document.querySelectorAll(".button-magnet, .magnet-item"));
     const cleanups = [];
 
     buttons.forEach((button) => {
@@ -265,6 +265,59 @@ function useCertificateSpotlight() {
       cleanups.forEach(([card, onMove, onLeave]) => {
         card.removeEventListener("pointermove", onMove);
         card.removeEventListener("pointerleave", onLeave);
+      });
+    };
+  }, []);
+}
+
+function useInteractiveSurfaces() {
+  useEffect(() => {
+    const supportsFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (!supportsFinePointer || prefersReducedMotion) {
+      return undefined;
+    }
+
+    const surfaces = Array.from(document.querySelectorAll(".fx-surface"));
+    const cleanups = [];
+
+    surfaces.forEach((surface) => {
+      const onMove = (event) => {
+        const rect = surface.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateY = ((x - centerX) / centerX) * 4.8;
+        const rotateX = -((y - centerY) / centerY) * 4.8;
+
+        surface.style.setProperty("--fx-x", `${(x / rect.width) * 100}%`);
+        surface.style.setProperty("--fx-y", `${(y / rect.height) * 100}%`);
+        surface.style.setProperty("--fx-rotate-x", `${rotateX.toFixed(2)}deg`);
+        surface.style.setProperty("--fx-rotate-y", `${rotateY.toFixed(2)}deg`);
+      };
+
+      const onEnter = () => surface.classList.add("is-surface-active");
+      const onLeave = () => {
+        surface.classList.remove("is-surface-active");
+        surface.style.setProperty("--fx-x", "50%");
+        surface.style.setProperty("--fx-y", "50%");
+        surface.style.setProperty("--fx-rotate-x", "0deg");
+        surface.style.setProperty("--fx-rotate-y", "0deg");
+      };
+
+      cleanups.push([surface, onMove, onEnter, onLeave]);
+      surface.addEventListener("pointermove", onMove);
+      surface.addEventListener("pointerenter", onEnter);
+      surface.addEventListener("pointerleave", onLeave);
+    });
+
+    return () => {
+      cleanups.forEach(([surface, onMove, onEnter, onLeave]) => {
+        surface.removeEventListener("pointermove", onMove);
+        surface.removeEventListener("pointerenter", onEnter);
+        surface.removeEventListener("pointerleave", onLeave);
       });
     };
   }, []);
@@ -410,6 +463,7 @@ function App() {
   useCursorGlow();
   useMagnetButtons();
   useCertificateSpotlight();
+  useInteractiveSurfaces();
   useStarfield(canvasRef);
 
   useEffect(() => {
@@ -561,6 +615,11 @@ function App() {
         <main className="content" id="top">
           <section className={`hero ${switchingBlocks.includes("hero") ? "is-switching" : ""}`} id="overview" data-lang-block>
             <div className="hero-copy reveal is-visible">
+              <div className="hero-ambient" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
               <div className="eyebrow mono">{heroText.heroEyebrow}</div>
               <SplitHeading lines={headingLines} visible={heroVisible} />
               <p className="hero-subtitle mono">{heroText.heroSubtitle}</p>
@@ -581,19 +640,19 @@ function App() {
               </div>
 
               <div className="signal-grid">
-                <div className="signal-card">
+                <div className="signal-card fx-surface">
                   <span className="mono">{heroText.signalAcademicLabel}</span>
                   <strong>{heroText.signalAcademicValue}</strong>
                 </div>
-                <div className="signal-card">
+                <div className="signal-card fx-surface">
                   <span className="mono">{heroText.signalCertificatesLabel}</span>
                   <strong>5</strong>
                 </div>
-                <div className="signal-card">
+                <div className="signal-card fx-surface">
                   <span className="mono">{heroText.signalFocusLabel}</span>
                   <strong>OffSec</strong>
                 </div>
-                <div className="signal-card">
+                <div className="signal-card fx-surface">
                   <span className="mono">{heroText.signalBaseLabel}</span>
                   <strong>{heroText.signalBaseValue}</strong>
                 </div>
@@ -611,11 +670,11 @@ function App() {
               </div>
 
               <div className="profile-stage">
-                <div className="profile-frame">
+                <div className="profile-frame fx-surface">
                   <img src="/media/DorothyHalf.png" alt="Portrait of Paphanthadanai Lomphonthan" />
                 </div>
 
-                <div className="quick-panel">
+                <div className="quick-panel fx-surface">
                   <h2 className="mono">{heroText.quickTitle}</h2>
                   <ul className="quick-list">
                     <li>
@@ -651,7 +710,7 @@ function App() {
 
             <div className="grid-three">
               {focusCards.map((card) => (
-                <article className="panel reveal" key={card.title}>
+                <article className="panel reveal fx-surface" key={card.title}>
                   <div className="panel-code mono">{focusText[card.code]}</div>
                   <h3>{focusText[card.title]}</h3>
                   <p>{focusText[card.body]}</p>
@@ -671,7 +730,7 @@ function App() {
 
             <div className="timeline">
               {journeySteps.map((step) => (
-                <article className="timeline-item reveal" key={step.title}>
+                <article className="timeline-item reveal fx-surface" key={step.title}>
                   <div className="timeline-date mono">{journeyText[step.label]}</div>
                   <div className="timeline-body">
                     <h3>{journeyText[step.title]}</h3>
@@ -693,7 +752,7 @@ function App() {
 
             <div className="tag-wrap reveal">
               {toolkitTags.map((tag) => (
-                <span className="tag mono" key={tag}>
+                <span className="tag mono magnet-item" key={tag}>
                   {tag}
                 </span>
               ))}
@@ -739,7 +798,7 @@ function App() {
 
           <section className={`section ${switchingBlocks.includes("building") ? "is-switching" : ""}`} data-lang-block>
             <div className="split-grid">
-              <article className="panel reveal">
+              <article className="panel reveal fx-surface">
                 <div className="panel-code mono">{buildingText.bringCode}</div>
                 <h3>{buildingText.bringTitle}</h3>
                 <ul className="list-clean">
@@ -749,7 +808,7 @@ function App() {
                 </ul>
               </article>
 
-              <article className="panel reveal">
+              <article className="panel reveal fx-surface">
                 <div className="panel-code mono">{buildingText.buildCode}</div>
                 <h3>{buildingText.buildTitle}</h3>
                 <ul className="list-clean">
@@ -769,12 +828,12 @@ function App() {
                 <p>{contactText.contactBody}</p>
                 <p className="contact-note contact-note-spaced">{contactText.contactNote}</p>
 
-                <div className="support-panel">
+                <div className="support-panel fx-surface">
                   <h3>{contactText.supportTitle}</h3>
                   <p>{contactText.supportBody}</p>
                   <div className="support-actions mono">
                     <a
-                      className="support-button"
+                      className="support-button magnet-item"
                       href="https://buymeacoffee.com/d0r07hy"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -782,7 +841,7 @@ function App() {
                       {contactText.supportCoffee}
                     </a>
                     <a
-                      className="support-button kofi"
+                      className="support-button kofi magnet-item"
                       href="https://ko-fi.com/d0r07hy"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -795,7 +854,7 @@ function App() {
 
               <div className="contact-links">
                 <a
-                  className="contact-link"
+                  className="contact-link fx-surface"
                   href="https://github.com/D0R07HY"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -807,7 +866,7 @@ function App() {
                   <span className="mono">{contactText.contactOpen}</span>
                 </a>
 
-                <div className="contact-link">
+                <div className="contact-link fx-surface">
                   <div>
                     <strong>{contactText.contactLocationTitle}</strong>
                     <span className="mono">{contactText.contactLocationValue}</span>
@@ -815,7 +874,7 @@ function App() {
                   <span className="mono">{contactText.contactLocationTag}</span>
                 </div>
 
-                <div className="contact-link">
+                <div className="contact-link fx-surface">
                   <div>
                     <strong>{contactText.contactDirectionTitle}</strong>
                     <span className="mono">{contactText.contactDirectionValue}</span>
